@@ -4,12 +4,7 @@ import com.example.workshop01.model.IndexModel;
 import com.example.workshop01.service.IndexService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
-
 
 @RestController
 public class IndexController {

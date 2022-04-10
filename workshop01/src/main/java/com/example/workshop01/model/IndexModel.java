@@ -18,4 +18,13 @@ public class IndexModel {
         this.name = name;
         this.mail = mail;
     }
+
+    public boolean testName() {
+        return name instanceof String;
+    }
+
+    public boolean testMail() {
+        return mail instanceof String;
+
+    }
 }
