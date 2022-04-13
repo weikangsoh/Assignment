@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### Git ###
-.DS_Store.DS_Store
+.DS_Store
