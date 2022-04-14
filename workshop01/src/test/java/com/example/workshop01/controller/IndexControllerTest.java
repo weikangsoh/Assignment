@@ -55,7 +55,7 @@ public class IndexControllerTest {
 
     @Test
     public void testIndex6() {
-        ResponseEntity result = indexController.index6();
+        ResponseEntity<String> result = indexController.index6();
         Assertions.assertEquals("success", result.getBody(), "Correct Body.");
         Assertions.assertEquals(HttpStatus.OK, result.getStatusCode(), "Status Code is 200.");
     }
@@ -73,8 +73,7 @@ public class IndexControllerTest {
 
     @Test
     public void testIndex3() throws Exception {
-        IndexModel indexModel = new IndexModel();
-        indexModel.setData("Hi", "Hello");
+        IndexModel indexModel = new IndexModel("Hi", "Hello");
         this.mockMvc.perform(post("/index3")
                 .content(asJsonString(indexModel))
                 .contentType(MediaType.APPLICATION_JSON)
