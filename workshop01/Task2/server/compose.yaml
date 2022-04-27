@@ -1,0 +1,30 @@
+version: '3'
+networks:
+    my-net:
+        external: false
+        name: my-net
+
+services:
+  db:
+    image: stackupiss/northwind-db:v1
+    ports:
+      - 3306:3306
+    networks:
+      - my-net
+    volumes:
+      - db-data:/var/lib/mysql
+
+  app:
+    image: stackupiss/northwind-app:v1  
+    ports: 
+      - 3000:3000
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=changeit
+    networks:
+      - my-net
+
+volumes:
+  db-data:
+    driver: local
