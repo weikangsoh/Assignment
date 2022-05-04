@@ -23,21 +23,21 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 20Gi
+      storage: 1Gi
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: wordpress-mysql
   labels:
     app: wordpress
 spec:
+  serviceName: wordpress-mysql
+  replicas: 1
   selector:
     matchLabels:
       app: wordpress
       tier: mysql
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
@@ -57,9 +57,46 @@ spec:
         - containerPort: 3306
           name: mysql
         volumeMounts:
-        - name: mysql-persistent-storage
+        - name: mysql-storage
           mountPath: /var/lib/mysql
-      volumes:
-      - name: mysql-persistent-storage
-        persistentVolumeClaim:
-          claimName: mysql-pv-claim
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-storage
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mysql-deployment-network-policy
+  labels:
+    app: wordpress
+spec:
+  podSelector:
+    matchLabels:
+      app: wordpress
+      tier: mysql
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: wordpress
+            tier: frontend
+      ports:
+        - port: 3306
+          protocol: TCP
+  egress:
+    - to:
+      - podSelector:
+          matchLabels:
+            app: wordpress
+            tier: frontend
+      ports:
+        - port: 3306
+          protocol: TCP

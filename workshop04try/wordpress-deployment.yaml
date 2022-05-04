@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: wordpress
+  name: wordpress-svc
   labels:
     app: wordpress
 spec:
@@ -23,7 +23,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 20Gi
+      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -65,3 +65,38 @@ spec:
       - name: wordpress-persistent-storage
         persistentVolumeClaim:
           claimName: wp-pv-claim
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: wordpress-deployment-network-policy
+  labels:
+    app: wordpress
+spec:
+  podSelector:
+    matchLabels:
+      app: wordpress
+      tier: frontend
+  policyTypes:
+    - Egress
+    - Ingress
+  egress: 
+    - {}
+  ingress: 
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: ingress-nginx
+            app.kubernetes.io/instance: ingress-nginx
+            app.kubernetes.io/name: ingress-nginx
+  # egress:
+  #   - to:
+  #     - podSelector:
+  #         matchLabels:
+  #           app: wordpress
+  #           tier: mysql
+  #           controller-revision-hash: wordpress-mysql-85bf648c49
+  #           statefulset.kubernetes.io/pod-name: wordpress-mysql-0
+  #     ports:
+  #       - port: 3306
+  #         protocol: TCP
